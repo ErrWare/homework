@@ -1,3 +1,4 @@
+//when compiling use gcc -pthread -o outputexename sem1.c
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,6 +1,7 @@
 //this is the project file for OS Project 2
 //Goal: demonstrate an understanding of thread synchronization using semaphores
 //
+//when compiling use g++ -pthread -o outputexename proj2.cpp
 #include <stdio.h>
 #include <iostream>
 #include <pthread.h>

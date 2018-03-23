@@ -1,3 +1,92 @@
 This file is the conglomeration of my homework answers, revised and picked
 through. These assignments asked to explain various OS concepts - in other
 words read the book and paraphrase.
+
+1. How can interrupts be used to improve processor utilization during I/O
+activity?
+
+
+
+2. How is DMA an improvement over interrupt-driven I/O?
+
+
+
+3. Why does a memory cache result in better processor performance?
+
+
+
+4. How can two or more programs be run at the same time if there is only one
+processor?
+
+
+
+5. What does it mean to be multithreaded?
+
+
+
+6. What is SMP?
+
+
+
+7. What is the difference between a process and a thread? *This is probably an
+interview question
+
+
+
+8. What is a process image?
+
+
+
+9 What is the reason for splitting the "suspend" state into blocked-suspen
+and a ready-suspend states?
+
+
+
+10. How can threads be used to speed up execution?
+
+
+
+11. Why do thread activities sometimes require coordinating?
+
+
+
+12. In user level threads, a syscall by a thread may block all other threads of
+the process. Why?
+
+
+
+13. In Peterson's Algorithm, if both processes want to enter the critical
+section, what keeps starvation from occurring?
+
+
+
+14. How does interrupt disabling provide mutual exclusion?
+
+
+
+15. In the Compare&Swap instruction, why must the instruction execute
+atomically?
+
+
+
+16. Why is the mutual exclusion condition necessary for deadlock to occur?
+
+
+
+17. Discuss two problems in fixed partitioning.
+
+
+
+18. Explain how relative addressing supports relocation.
+
+
+
+19. In a paging scheme, how is a virtual address translated into a physical
+address?
+
+
+
+20. Explain what happens when a page fault occurs.
+
+
+

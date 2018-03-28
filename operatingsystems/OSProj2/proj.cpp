@@ -10,6 +10,8 @@
 #include <semaphore.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <cstdlib>
+#include <ctime>
 
 void* print_thread(void*);
 void* patient(void*);
@@ -29,7 +31,7 @@ sem_t ready2gab[3];
 sem_t advice_given[3];
 sem_t assignedQ[3];
 sem_t party_time;
-
+int doctors;
 int* patient_to_dr;
 class Queue {
     class Node{
@@ -81,6 +83,7 @@ class Queue {
 
 };
 Queue qs[] = {*(new Queue), *(new Queue), *(new Queue)};
+Queue waitingQ = *(new Queue);
 
 
 int main(int argc, char *argv[])
@@ -92,7 +95,7 @@ int main(int argc, char *argv[])
         std::cout << "Pogram requires precisely 3 arguments (including executable name)" << std::endl;
     }
     
-    int doctors = atoi(argv[1]);
+    doctors = atoi(argv[1]);
     int patients = atoi(argv[2]);
     patient_to_dr = new int[patients];
 
@@ -135,7 +138,8 @@ int main(int argc, char *argv[])
 
     pthread_join(tid, NULL);
 
-    sleep(patients);
+    if (sem_wait(&party_time) == -1) exit(1);
+    printf("ALL PATIENTS HAVE LEFT ~~ TIME TO PARTY");
 
 }
 
@@ -145,19 +149,75 @@ void* print_thread(void* input){
 }
 
 void* patient(void* input){
+    int id = *((int*)input);
+    if (sem_wait(&waiting_room_door) == -1) exit(1);
+    waitingQ.insert(id);
+    printf("Patient%d has entered the waiting room",id);
+    sleep(1);
+    if (sem_post(&waiting_room) == -1) exit(1);
+    if (sem_post(&waiting_room_door) == -1) exit(1);
+
+    if (sem_wait(&receptionist_assigned) == -1) exit(1);
+    printf("Patient%d leaves receptionist and sits in waiting room", id);
+    sleep(1);
+    
+    if (sem_wait(&(entry[patient_to_dr[id]])) == -1) exit(1);
+    printf("Patient%d enters Doctor%d's office", id, patient_to_dr[id]);
+    sleep(1);
+
+    if (sem_post(&(ready2gab[patient_to_dr[id]])) == -1) exit(1);
+    if (sem_wait(&(advice_given[patient_to_dr[id]])) == -1) exit(1);
+    printf("Patient%d receives advice from doctor%d", id, patient_to_dr[id]);
+    sleep(1);
+
+    if (sem_post(&(drs[patient_to_dr[id]])) == -1) exit(1);
+    printf("Patient%d leaves", id);
+    sleep(1);
+    if (sem_post(&party_time) == -1) exit(1);
 
     return NULL;
 }
 void* receptionist(void* input){
-
+    std:srand(std::time(NULL));
+    int pid;
+    int r;
+    while(true){
+        if (sem_wait(&waiting_room) == -1) exit(1);
+        pid = waitingQ.poll();
+        r = std::rand() % doctors;
+        qs[r].insert(pid);                              //assign dr to patient
+        patient_to_dr[pid] = r;                         //and vice versa
+        if (sem_post(&(assignedQ[r]) == -1) exit(1);    //and signal nurse
+        printf("Receptionist registered patient%d", pid);
+        sleep(1);
+        if (sem_post(&receptionist_assigned) == -1) exit(1);
+    }
     return NULL;
 }
 void* nurse(void* input){
-    printf("nurse %d create\n", *((int*)input));
+    int id = *((int*)input);
+    printf("nurse %d create\n", id);
+    while(true){
+        if (sem_wait(&(drs[id])) == -1) exit(1);
+        if (sem_wait(&(assignedQ[id])) == -1) exit(1);
+        printf("Nurse%d takes patient%d to doctor's office", id, qs[id].peek());
+        sleep(1);
+        if (sem_wait(&(entry[id])) == -1) exit(1);
+    }
     return NULL;
 }
 void* dr(void* input){
-    printf("dr %d created\n", *((int*)input));
+    int id = *((int*)input);
+    printf("dr %d created\n", id);
+    if (sem_post(&(drs[id])) == -1) exit(1);
+    while(true){
+        if (sem_wait(&(ready2gab[id])) == -1) exit(1);
+        printf("Doctor%d listens to symptoms from patient%d", id, qs[id].poll());
+        sleep(1);
+
+        if (sem_post(&(advice_given[id])) == -1) exit(1);
+        
+    }
     return NULL;
 }
 

@@ -2,7 +2,7 @@ List of semaphores:
     Receptionist_admit - 0 - signaled by receptionist when ready for patient
     Receptionist_assigned - 0 - signaled by receptionist to indicate patient has
         been assigned a dr
-    Patient_accept - 0 -  signaled by patient to let receptionist know they have
+    Patient_accept - 0 -  signaled by patient to let receptionist and nurse know they have
         accepted their dr assignment
     Nurse_1-3 - 0 - signaled by respective thread, waited on by patient
     assignedQ_1-3 - 0 - signaled by receptionist to tell nurses when patients

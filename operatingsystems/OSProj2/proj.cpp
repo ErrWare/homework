@@ -66,6 +66,7 @@ class Queue {
             return (*head).getNum();
         }
         int poll(){
+            if (isEmpty()) exit(99);
             int i = peek();
             Node* n = (*head).getNext();
             delete(head);
@@ -97,7 +98,7 @@ int main(int argc, char *argv[])
     doctors = atoi(argv[1]);
     int patients = atoi(argv[2]);
     patient_to_dr = new int[patients];
-    pthread_t pids[patients];
+    pthread_t pids[patients+1];
 
     if (sem_init (&waiting_room_door, 0, 1) == -1) exit(1);
     if (sem_init (&waiting_room, 0, 0) == -1) exit(1);
@@ -147,7 +148,7 @@ void* patient(void* input){
     sleep(1);
     if (sem_post(&waiting_room) == -1) exit(21);
     if (sem_post(&waiting_room_door) == -1) exit(22);
-
+        printf("Patient%d left the door open\n",id);
     if (sem_wait(&receptionist_assigned) == -1) exit(23);
     printf("Patient%d leaves receptionist and sits in waiting room\n", id);
     sleep(1);
@@ -175,11 +176,14 @@ void* receptionist(void* input){
     int r;
     while(true){
         if (sem_wait(&waiting_room) == -1) exit(30);
+        printf("Receptionist attempting poll\n");
         pid = waitingQ.poll();
-        r = std::rand() % doctors;
+        printf("Receptionist succeeded poll\n");
+        r = 1; // std::rand() % doctors;
         printf("Dr assigned: %d", r);
         qs[r].insert(pid);                              //assign dr to patient
         patient_to_dr[pid] = r;                         //and vice versa
+        printf("Receptionist updated dr structures\n");
         if (sem_post(&(assignedQ[r])) == -1) exit(31);    //and signal nurse
         printf("Receptionist registered patient%d\n", pid);
         sleep(1);

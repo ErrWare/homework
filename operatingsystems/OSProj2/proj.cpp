@@ -187,7 +187,7 @@ void* receptionist(void* input){
         r = std::rand() % doctors;
         qs[r].insert(pid);                              //assign dr to patient
         patient_to_dr[pid] = r;                         //and vice versa
-        if (sem_post(&(assignedQ[r]) == -1) exit(1);    //and signal nurse
+        if (sem_post(&(assignedQ[r])) == -1) exit(1);    //and signal nurse
         printf("Receptionist registered patient%d", pid);
         sleep(1);
         if (sem_post(&receptionist_assigned) == -1) exit(1);

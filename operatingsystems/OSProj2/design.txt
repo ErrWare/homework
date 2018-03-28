@@ -1,16 +1,23 @@
 List of semaphores:
     Receptionist_admit - 0 - signaled by receptionist when ready for patient
-    Receptions_assigned - 0 - signaled by receptionist to indicate patient has
+    Receptionist_assigned - 0 - signaled by receptionist to indicate patient has
         been assigned a dr
     Patient_accept - 0 -  signaled by patient to let receptionist know they have
         accepted their dr assignment
     Nurse_1-3 - 0 - signaled by respective thread, waited on by patient
-    Dr_1-3 - 0 - signaled by respective thread, waited on by patient
-
-
+    assignedQ_1-3 - 0 - signaled by receptionist to tell nurses when patients
+        are waiting for them
+    Dr_1-3 - 0 - signaled by respective thread, waited on by nurse
+    waiting_room - 0 - signaled by patients to let receptionist act
+    waiting_room_door - 0 - taken and released by patients so their order can
+        be recorded
+    entry_1-3 - 0 - signaled by nurse to tell patient when they've entered the
+        dr's office
+    ready2gab_1-3 - 0 - signaled by patient when ready to complain to dr
+    advice_given_1-3 - 0 - signaled by dr when finished advising
 List of global vars:
     Semaphores
-    Hash look-up table patient -> dr assignment
+    Hash look-up table: patient -> dr assignment
     nurse/dr queue -> FIFO assigned patient number
 
 List of threads:
@@ -20,3 +27,43 @@ List of threads:
     patient
 
 Description of threads:
+    Patient:
+        wait for waiting_room_door
+        add patient number to waitingQ  //print
+        signal waiting_room
+        signal waiting_room_dor
+        wait for receptionist_assign
+                                        //print
+        wait for nurse[assigned]
+        wait for entry[assigned]
+                                        //print
+        signal ready2gab[assigned]
+        wait advice_given[assigned]
+                                       //print
+        signal dr[assigned]
+        signal partytime
+        exit
+
+    Receptionist:
+        wait for waiting_room
+        take patient from Q and assign dr   //print
+        signal receptionist_assign
+        signal assignedQ
+        repeat
+
+    Nurse:
+        wait for Dr
+        wait for assignedQ
+        signal Nurse[me]    //print
+        signal entry[me]
+        repeat
+
+    Dr:
+        signal dr[me]
+        ->
+        wait for ready2gab[me]
+                                    //print
+        signal advice_given[me]
+        repeat <-
+
+

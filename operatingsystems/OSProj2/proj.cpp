@@ -28,6 +28,7 @@ sem_t entry[3];
 sem_t ready2gab[3];
 sem_t advice_given[3];
 sem_t assignedQ[3];
+sem_t party_time;
 
 int* patient_to_dr;
 class Queue {
@@ -79,7 +80,7 @@ class Queue {
         }
 
 };
-
+Queue qs[] = {*(new Queue), *(new Queue), *(new Queue)};
 
 
 int main(int argc, char *argv[])
@@ -102,7 +103,7 @@ int main(int argc, char *argv[])
     if (sem_init (&patient_accept, 0, 0) == -1) exit(1);
     //create an array of literals because the pthread create pass by reference
     //is liable to have the val at payload address change before it is used
-    int literals[] = {0,1,2};
+    int literals[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29};
     for(int i = 0; i<doctors; i++){
         if (sem_init (&(nurses[i]), 0, 0) == -1) exit(1);
         if (sem_init (&(drs[i]), 0, 0) == -1) exit(1);
@@ -115,12 +116,20 @@ int main(int argc, char *argv[])
         pthread_create(&tid1, NULL, dr, literals+i);
         pthread_create(&tid2, NULL, nurse, literals+i);
     }
+    for(int i = 0; i < patients; i++){
+        pthread_t tid;
+        pthread_create(&tid, NULL, patient, literals+i);
+    }
+    pthread_t tid;
+    pthread_create(&tid, NULL, receptionist, NULL);
+
+    if (sem_init(&party_time, 0, 1-patients) == -1) exit(1);
 
 
 
 //    std::cout << "Drs: " << doctors << "\tpatients: " << patients << "\tDrs * patients: " << doctors * patients << std::endl;
 
-    pthread_t tid;
+    
     int i = 7;
     pthread_create(&tid, NULL, print_thread, &i);
 

@@ -13,7 +13,6 @@
 #include <cstdlib>
 #include <ctime>
 
-void* print_thread(void*);
 void* patient(void*);
 void* nurse(void*);
 void* receptionist(void*);
@@ -82,8 +81,8 @@ class Queue {
         }
 
 };
-Queue qs[] = {*(new Queue), *(new Queue), *(new Queue)};
-Queue waitingQ = *(new Queue);
+Queue q0, q1, q2, waitingQ;
+Queue qs[] = {q0, q1, q2};
 
 
 int main(int argc, char *argv[])
@@ -119,10 +118,12 @@ int main(int argc, char *argv[])
         pthread_create(&tid1, NULL, dr, literals+i);
         pthread_create(&tid2, NULL, nurse, literals+i);
     }
-    pthread_t tid;
-    pthread_create(&tid, Null, receptionist, NULL);
+    printf("Done creating skilled workers\n");
+    pthread_t xyz;
+    pthread_create(&xyz, NULL, receptionist, literals);
+
     for(int i = 0; i < patients; i++){
-        printf("Spawning patient%d", i);
+        printf("Spawning patient%d\n", i);
         pthread_create(&(pids[i]), NULL, patient, literals+i);
     }
 
@@ -130,50 +131,46 @@ int main(int argc, char *argv[])
 
 //    std::cout << "Drs: " << doctors << "\tpatients: " << patients << "\tDrs * patients: " << doctors * patients << std::endl;
 
-    for(int i = 0; i < patients; i++)
+   /* for(int i = 0; i < patients; i++)
         pthread_join(pids[i], NULL);
-
+*/
+    sleep(13);
     printf("ALL PATIENTS GONE~~~ PARTY TIME");
 
-}
-
-void* print_thread(void* input){
-  //  printf("%d\n", 5 * *((int*)input));
-    return NULL;
 }
 
 void* patient(void* input){
     int id = *((int*)input);
     if (sem_wait(&waiting_room_door) == -1) exit(20);
     waitingQ.insert(id);
-    printf("Patient%d has entered the waiting room",id);
+    printf("Patient%d has entered the waiting room\n",id);
     sleep(1);
     if (sem_post(&waiting_room) == -1) exit(21);
     if (sem_post(&waiting_room_door) == -1) exit(22);
 
     if (sem_wait(&receptionist_assigned) == -1) exit(23);
-    printf("Patient%d leaves receptionist and sits in waiting room", id);
+    printf("Patient%d leaves receptionist and sits in waiting room\n", id);
     sleep(1);
     
     if (sem_wait(&(entry[patient_to_dr[id]])) == -1) exit(24);
-    printf("Patient%d enters Doctor%d's office", id, patient_to_dr[id]);
+    printf("Patient%d enters Doctor%d's office\n", id, patient_to_dr[id]);
     sleep(1);
 
     if (sem_post(&(ready2gab[patient_to_dr[id]])) == -1) exit(25);
     if (sem_wait(&(advice_given[patient_to_dr[id]])) == -1) exit(26);
-    printf("Patient%d receives advice from doctor%d", id, patient_to_dr[id]);
+    printf("Patient%d receives advice from doctor%d\n", id, patient_to_dr[id]);
     sleep(1);
 
     if (sem_post(&(drs[patient_to_dr[id]])) == -1) exit(26);
-    printf("Patient%d leaves", id);
+    printf("Patient%d leaves\n", id);
     sleep(1);
     if (sem_post(&party_time) == -1) exit(27);
 
     return NULL;
 }
 void* receptionist(void* input){
-    printf("Receptionist initiated");
-    std:srand(std::time(NULL));
+    printf("Receptionist initiated\n");
+//    std:srand(std::time(NULL));
     int pid;
     int r;
     while(true){
@@ -184,7 +181,7 @@ void* receptionist(void* input){
         qs[r].insert(pid);                              //assign dr to patient
         patient_to_dr[pid] = r;                         //and vice versa
         if (sem_post(&(assignedQ[r])) == -1) exit(31);    //and signal nurse
-        printf("Receptionist registered patient%d", pid);
+        printf("Receptionist registered patient%d\n", pid);
         sleep(1);
         if (sem_post(&receptionist_assigned) == -1) exit(32);
     }
@@ -192,11 +189,13 @@ void* receptionist(void* input){
 }
 void* nurse(void* input){
     int id = *((int*)input);
-    printf("nurse %d create\n", id);
+   // printf("nurse %d created\n", id);
     while(true){
+       // printf("nurse%d waiting for dr\n", id);
         if (sem_wait(&(drs[id])) == -1) exit(40);
+       // printf("nurse%d waiting for patientQ\n", id);
         if (sem_wait(&(assignedQ[id])) == -1) exit(41);
-        printf("Nurse%d takes patient%d to doctor's office", id, qs[id].peek());
+        printf("Nurse%d takes patient%d to doctor's office\n", id, qs[id].peek());
         sleep(1);
         if (sem_wait(&(entry[id])) == -1) exit(42);
     }
@@ -204,11 +203,12 @@ void* nurse(void* input){
 }
 void* dr(void* input){
     int id = *((int*)input);
-    printf("dr %d created\n", id);
+   // printf("dr %d created\n", id);
     if (sem_post(&(drs[id])) == -1) exit(50);
     while(true){
+    //    printf("Dr%d waiting for gab\n", id);
         if (sem_wait(&(ready2gab[id])) == -1) exit(51);
-        printf("Doctor%d listens to symptoms from patient%d", id, qs[id].poll());
+        printf("Doctor%d listens to symptoms from patient%d\n", id, qs[id].poll());
         sleep(1);
 
         if (sem_post(&(advice_given[id])) == -1) exit(52);
@@ -216,7 +216,3 @@ void* dr(void* input){
     }
     return NULL;
 }
-
-
-
-

@@ -30,6 +30,57 @@ sem_t advice_given[3];
 sem_t assignedQ[3];
 
 int* patient_to_dr;
+class Queue {
+    class Node{
+        Node* next;
+        int i;
+        public:
+        Node(int j){
+            i = j;
+            next = NULL;
+        }
+        void setNext(Node* n){
+            next = n;
+        }
+        Node* getNext(){
+            return next;
+        }
+        int getNum(){
+            return i;
+        }
+        Node* insert(int j){
+            next = new Node(j);
+            return next;
+        }
+    };
+    Node* head = NULL;
+    Node* tail = NULL;
+
+    public:
+        bool isEmpty(){
+            return head == NULL;
+        }
+        int peek(){
+            return (*head).getNum();
+        }
+        int poll(){
+            int i = peek();
+            Node* n = (*head).getNext();
+            delete(head);
+            head = n;
+        }
+        void insert(int i){
+            if(isEmpty()){
+                head = new Node(i);
+                tail = head;
+            } else {
+                tail = (*tail).insert(i);
+            }
+        }
+
+};
+
+
 
 int main(int argc, char *argv[])
 {
@@ -101,52 +152,6 @@ void* dr(void* input){
     return NULL;
 }
 
-class Queue {
-    class Node{
-        Node* next;
-        int i;
-        public:
-        Node(int j){
-            i = j;
-            next = NULL;
-        }
-        void setNext(Node* n){
-            next = n;
-        }
-        Node* getNext(){
-            return next;
-        }
-        int getNum(){
-            return i;
-        }
-        Node* insert(int j){
-            next = new Node(j);
-            return next;
-        }
-    }
-    Node* head = NULL;
-    Node* tail = NULL;
 
-    public:
-        bool isEmpty(){
-            return head == NULL;
-        }
-        int peek(){
-            return (*head).getNum();
-        }
-        int poll(){
-            int i = peek();
-            Node* n = (*head).getNext();
-            delete(head);
-            head = n;
-        }
-        void insert(int i){
-            if(isEmpty()){
-                head = new Node(i);
-                tail = head;
-            } else {
-                tail = (*tail).insert(i);
-            }
-        }
 
-}
+

@@ -31,7 +31,21 @@ class Job{
 
 };
 int Job::total_jobs = 0;
+int total_work_time = 0;
+int* schedule;
 Job jobs[26];
+
+void printschedule(){
+    for(int i = 0; i < Job::total_jobs; i++)
+        std::cout << (char)(65+i) << "\t";
+    std::cout << std::endl;
+    
+    for(int i = 0; i < total_work_time; i++){
+        for(int j = 0; j < schedule[i]; j++)
+            std::cout << "\t";
+        std::cout << "X" << std::endl;
+    }
+}
 
 
 int main(int argc, char *argv[]){
@@ -46,8 +60,14 @@ int main(int argc, char *argv[]){
     std::fclose(f);
     Job::total_jobs -= 1;   //because I'm bad at reading from files and get an extra line in the while loop
 
-    for(int i = 0; i < Job::total_jobs; i++)
+    for(int i = 0; i < Job::total_jobs; i++){
         jobs[i].print();
+        total_work_time += jobs[i].total_time;
+    }
+    std::cout << "Total time : " << total_work_time << std::endl;
+    schedule = new int[total_work_time];
+
+    printschedule();
     //ifs.close();
 
 }

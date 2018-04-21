@@ -142,7 +142,38 @@ void HRRN(){
         }
     }
 }
-
+void FB(){
+    //Feedback with 3 queues
+    std::queue<Job> queues[3];
+    int time = 0;
+    Job * j;
+    while(time < total_work_time){
+        //add arrived jobs to first queue
+        for(int i = 0; i < Job::total_jobs; i++){
+            if(jobs[i].arrival_time = time)
+                queues[0].push(jobs[i]);
+        }
+        //determine which q to pop from
+        int q_used;
+        for(q_used = 0; q_used < 3; q_used++){
+            if(queues[q_used].empty())
+                continue;
+            break;
+        }
+        //get job to service
+        *j = queues[q_used].front();
+        queues[q_used].pop();
+        serviceJob(time, *j);
+        
+        //push serviced job to next queue if necessary
+        if(j->remaining_time() > 0){
+            if(q_used == 2)
+                queues[q_used].push(*j);
+            else
+                queues[q_used+1].push(*j);
+        }
+    }
+}
 //ASSUMPTION: no mandatory down time
 int main(int argc, char *argv[]){
     FILE* f = fopen("jobs.txt", "r");
@@ -181,6 +212,10 @@ int main(int argc, char *argv[]){
     resetJobs();
     std::cout << "HRRN" << std::endl;
     HRRN();
+    printschedule();
+    resetJobs();
+    std::cout << "FB" << std::endl;
+    FB();
     printschedule();
     //ifs.close();
 

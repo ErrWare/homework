@@ -8,6 +8,7 @@
 #include <fstream>
 #include <cstring>
 #include <cstdio>
+#include <queue>
 
 class Job{
     public:
@@ -33,7 +34,7 @@ class Job{
 int Job::total_jobs = 0;
 int total_work_time = 0;
 int* schedule;
-Job jobs[26];
+Job jobs[27];   //might accidentally get if there are really 26
 
 void printschedule(){
     for(int i = 0; i < Job::total_jobs; i++)
@@ -47,7 +48,46 @@ void printschedule(){
     }
 }
 
+void serviceJob(int &t, Job &j){
+    schedule[t] = j.id;
+    j.serviced_time++;
+    t++;
+}
+void resetJobs(){
+    for(int i = 0; i < Job::total_jobs; i++)
+        jobs[i].serviced_time = 0;
+}
 
+void FCFS(){
+    int time = 0;
+    for(int i = 0; i < Job::total_jobs; i++){    //relies on assumption jobs listed in chronological order in jobs.txt
+        while(jobs[i].remaining_time() > 0) {
+            serviceJob(time, jobs[i]);
+        }
+    }
+}
+void RR(){
+    int time = 0;
+    int min_job_not_in_queue = 1;
+    std::queue<Job> jq;
+    jq.push(jobs[0]);
+    Job* j;
+    while(time < total_work_time){
+        *j = jq.front();
+        jq.pop();
+        serviceJob(time, *j);
+        for(int i = min_job_not_in_queue; i < Job::total_jobs; i++){
+            if(jobs[i].arrival_time <= time){
+                jq.push(jobs[i]);
+                min_job_not_in_queue++;
+            }
+        }
+        if(j->remaining_time() > 0)
+            jq.push(*j);
+    }
+}
+
+//ASSUMPTION: no mandatory down time
 int main(int argc, char *argv[]){
     FILE* f = fopen("jobs.txt", "r");
     int a,b;
@@ -66,7 +106,13 @@ int main(int argc, char *argv[]){
     }
     std::cout << "Total time : " << total_work_time << std::endl;
     schedule = new int[total_work_time];
-
+    
+    FCFS();
+    printschedule();
+    std::cout << "resetting" << std::endl;
+    resetJobs();
+    std::cout << "reset" << std::endl;
+    RR();
     printschedule();
     //ifs.close();
 

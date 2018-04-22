@@ -193,90 +193,6 @@ void FB(){
         }
     }
 }
-void FB2(){
-    std::queue<Job> q1, q2, q3;
-    int time = 0;
-    Job * j;
-    std::cout << "New FB" << std::endl;
-    while(time < total_work_time){
-        for(int i = 0; i < Job::total_jobs; i++)
-            if(jobs[i].arrival_time == time)
-                q1.push(jobs[i]);
-
-        int q_used;
-        if(!q1.empty()){
-            q_used = 1;
-            *j = q1.front();
-            q1.pop();
-        }
-        else if(!q2.empty()){
-            q_used = 2;
-            *j = q2.front();
-            q2.pop();
-        }else{
-            q_used = 3;
-            *j = q3.front();
-            q3.pop();
-        }
-
-        serviceJob(time, *j);
-        if(q_used == 1){
-            if(j->remaining_time() > 0)
-                q2.push(*j);
-        }else{
-            if(j->remaining_time() > 0)
-                q3.push(*j);
-        }
-
-
-    }
-}
-void FB1(){
-    //Feedback with 3 queues
-    std::queue<Job> * queues = new std::queue<Job> [3];
-    int time = 0;
-    Job * j;
-    for(int i = 0; i < 3; i++){
-        //queues[i] = std::queue<Job>;
-        std::cout << "Size of q " << i << ": " << queues[i].size() << std::endl;
-    }
-    while(time < total_work_time){
-        //add arrived jobs to first queue
-        std::cout << "Time " << time << " start" << std::endl;
-        for(int i = 0; i < Job::total_jobs; i++){
-            
-            if(jobs[i].arrival_time == time){
-                queues[0].push(jobs[i]);
-                std::cout << "Job " << i << " enqueued" << std::endl;
-            }
-        }
-        //determine which q to pop from
-        std::cout << "Determining first nonempty q" << std::endl;
-        int q_used;
-        for(q_used = 0; q_used < 3; q_used++){
-            if(queues[q_used].empty())
-                continue;
-            break;
-        }
-        std::cout << "First nonempty q: " << q_used << "\tSize: " << queues[q_used].size() << " - " << std::endl;
-        //get job to service
-        *j = queues[q_used].front();
-        std::cout << "Assigned ";
-        queues[q_used].pop();
-        std::cout << "popped ";
-        serviceJob(time, *j);
-        std::cout << "serviced" << std::endl;
-        std::cout << "Repush" << std::endl;
-        //push serviced job to next queue if necessary
-        if(j->remaining_time() > 0){
-            if(q_used == 2)
-                queues[q_used].push(*j);
-            else
-                queues[q_used+1].push(*j);
-        }
-        std::cout << "Time " << time << " done" << std::endl;
-    }
-}
 //ASSUMPTION: no mandatory down time
 int main(int argc, char *argv[]){
     FILE* f = fopen("jobs.txt", "r");
@@ -318,9 +234,10 @@ int main(int argc, char *argv[]){
     printschedule();
     resetJobs();
     std::cout << "FB" << std::endl;
-    //FB();
+    FB();
     std::cout << "FB DONE:" <<std::endl;
     printschedule();
+    std::cout << "ALL DONE" <<std::endl;
     //ifs.close();
 
 }

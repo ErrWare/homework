@@ -246,8 +246,10 @@ int main(int argc, char *argv[]){
         printschedule();
     }
     else if(std::strcmp(argv[1],"RR")==0){
-        RR();
-        printschedule();
+        std::cout << "You don't want to do this, it's just going to segfault..." << std::endl;
+        std::cout << "To view RR scheduling use the ALL argument, somehow that works" << std::endl;
+        //RR();
+        //printschedule();
     }
     else if(std::strcmp(argv[1],"SRT")==0){
         SRT();

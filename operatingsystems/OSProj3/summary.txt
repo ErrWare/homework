@@ -1,0 +1,10 @@
+The project was a blast! I had a lot of fun! I learned a lot about dispatch
+scheduling algorithms! I approached this project in a heads on manner! I didn't
+bother designing a scalable, decoupled, cohesive architecture! I just brute
+forced everything, from making multiple variables with if else logic rather
+than using an array (seen in FB) to something else I brute forced! The only
+difficulties are the seg faults! I think they come from using the std::queue
+class! If running RR only the program seg faults! If running ALL it seg faults
+as well but only after executing all commands in the main function! The end
+result is a program that meets the scant criteria of the assignment! I'm so
+happy that I successfully completed this project! Yippekayay kaloo kalay!

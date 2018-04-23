@@ -9,6 +9,7 @@
 #include <cstring>
 #include <cstdio>
 #include <queue>
+#include <cstring>
 
 class Job{
     public:
@@ -195,6 +196,7 @@ void FB(){
 }
 //ASSUMPTION: no mandatory down time
 int main(int argc, char *argv[]){
+    
     FILE* f = fopen("jobs.txt", "r");
     int a,b;
     char s[6];
@@ -207,37 +209,65 @@ int main(int argc, char *argv[]){
     Job::total_jobs -= 1;   //because I'm bad at reading from files and get an extra line in the while loop
 
     for(int i = 0; i < Job::total_jobs; i++){
-        jobs[i].print();
         total_work_time += jobs[i].total_time;
     }
-    std::cout << "Total time : " << total_work_time << std::endl;
+    
     schedule = new int[total_work_time];
     
-    std::cout << "FCFS" << std::endl;
-    FCFS();
-    printschedule();
-    resetJobs();
-    std::cout << "RR" << std::endl;
-    RR();
-    printschedule();
-    resetJobs();
-    std::cout << "SRT" << std::endl;
-    SRT();
-    printschedule();
-    resetJobs();
-    std::cout << "SPN" << std::endl;
-    SPN();
-    printschedule();
-    resetJobs();
-    std::cout << "HRRN" << std::endl;
-    HRRN();
-    printschedule();
-    resetJobs();
-    std::cout << "FB" << std::endl;
-    FB();
-    std::cout << "FB DONE:" <<std::endl;
-    printschedule();
-    std::cout << "ALL DONE" <<std::endl;
-    //ifs.close();
-
+    if(std::strcmp(argv[1],"ALL")==0){
+        std::cout << "FCFS" << std::endl;
+        FCFS();
+        printschedule();
+        resetJobs();
+        std::cout << "RR" << std::endl;
+        RR();
+        printschedule();
+        resetJobs();
+        std::cout << "SRT" << std::endl;
+        SRT();
+        printschedule();
+        resetJobs();
+        std::cout << "SPN" << std::endl;
+        SPN();
+        printschedule();
+        resetJobs();
+        std::cout << "HRRN" << std::endl;
+        HRRN();
+        printschedule();
+        resetJobs();
+        std::cout << "FB" << std::endl;
+        FB();
+        std::cout << "FB DONE:" <<std::endl;
+        printschedule();
+        std::cout << "ALL DONE" <<std::endl;
+    }
+    else if(std::strcmp(argv[1],"FCFS")==0){
+        FCFS();
+        printschedule();
+    }
+    else if(std::strcmp(argv[1],"RR")==0){
+        RR();
+        printschedule();
+    }
+    else if(std::strcmp(argv[1],"SRT")==0){
+        SRT();
+        printschedule();
+    }
+    else if(std::strcmp(argv[1],"SPN")==0){
+        SPN();
+        printschedule();
+    }
+    else if(std::strcmp(argv[1],"HRRN")==0){
+        HRRN();
+        printschedule();
+    }
+    else if(std::strcmp(argv[1],"FB")==0){
+        FB();
+        printschedule();
+        std::cout << "FB done" << std::endl;
+    }
+    else{
+        std::cout << "Argument \"" << argv[1] << "\" not recognized" << std::endl;
+        std::cout << "Recognized arguments: ALL, FCFS, RR, SRT, SPN, HRRN, FB" << std::endl;
+    }
 }

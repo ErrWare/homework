@@ -1,0 +1,25 @@
+{
+	"food_articles":[
+		"https://en.wikipedia.org/wiki/Macadamia",
+		"https://en.wikipedia.org/wiki/Kale",
+		"https://en.wikipedia.org/wiki/Brussels_sprout",
+		"https://en.wikipedia.org/wiki/Broccoli",
+		"https://en.wikipedia.org/wiki/Herring_as_food",
+		"https://en.wikipedia.org/wiki/Walnut",
+		"https://en.wikipedia.org/wiki/Peanut",
+		"https://en.wikipedia.org/wiki/Flax"
+	],
+	"info":[
+		"dietary fiber",
+		"carbohydrates",
+		"fat", "saturated", "monounsaturated", "polyunsaturated",
+		"protein",
+		"calcium",
+		"iron",
+		"magnesium",
+		"manganese",
+		"potassium",
+		"zinc"
+	]
+
+}
